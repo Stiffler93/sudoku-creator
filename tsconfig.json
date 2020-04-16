@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "typeRoots": ["json.d.ts"],
+    "module": "CommonJS",
+    "target": "es6",
+    "lib": ["es2020", "dom"],
+    "moduleResolution": "node",
+    "outDir": "./output",
+    "strict": true,
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "inclue": ["**/*.ts", "**/*.json"],
+  "exclude": ["node_modules", "output"]
+}

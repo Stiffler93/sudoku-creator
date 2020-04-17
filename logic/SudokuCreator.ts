@@ -19,32 +19,62 @@ const {
   verticalIndices,
   nonOrthogonalIndices,
 } = GridUtils;
-const { rand, printGrid, shuffle, orderByValues, getNextNotIn } = Utils;
+const {
+  rand,
+  printGrid,
+  shuffle,
+  orderByValues,
+  getIndexWithFewestAvailableValues,
+} = Utils;
 
 function solveCollisions(values: number[], square: number, grid: number[]) {
-  console.log({ 'Solve collisions for values': values });
-
   const indices = indicesForSquare(square);
   const freeIndices = unsetIndices(indices, grid);
 
   for (const index of freeIndices) {
-    console.log(`For index ${index} check values:`);
-    console.log(values);
     for (const value of values) {
       const rowValues = valuesInRow(indexToRow(index), grid);
       const colValues = valuesInCol(indexToCol(index), grid);
 
-      console.log('Check value: ' + value);
       const valInRow = rowValues.includes(value);
       const valInCol = colValues.includes(value);
 
       let indexToChangeWith = -1;
 
       if (valInCol && valInRow) {
-        // change diagonally
-        console.log('Diagonal change not implemented yet');
+        const otherIndices = nonOrthogonalIndices(index);
+
+        for (const otherIndex of otherIndices) {
+          const isValueInOtherCol = valuesInCol(
+            indexToCol(otherIndex),
+            grid
+          ).includes(value);
+
+          const isValueInOtherRow = valuesInRow(
+            indexToRow(otherIndex),
+            grid
+          ).includes(value);
+
+          if (isValueInOtherCol || isValueInOtherRow) continue;
+
+          const otherValue = grid[otherIndex];
+
+          const isOtherValueInCol = valuesInCol(
+            indexToCol(index),
+            grid
+          ).includes(otherValue);
+
+          const isOtherValueInRow = valuesInRow(
+            indexToRow(index),
+            grid
+          ).includes(otherValue);
+
+          if (isOtherValueInRow || isOtherValueInCol) continue;
+
+          indexToChangeWith = otherIndex;
+          break;
+        }
       } else if (valInRow) {
-        console.log('Change vertically');
         const otherIndices = verticalIndices(index);
 
         for (const otherIndex of otherIndices) {
@@ -67,7 +97,6 @@ function solveCollisions(values: number[], square: number, grid: number[]) {
           break;
         }
       } else {
-        console.log('Change horizontally');
         const otherIndices = horizontalIndices(index);
 
         for (const otherIndex of otherIndices) {
@@ -92,36 +121,36 @@ function solveCollisions(values: number[], square: number, grid: number[]) {
       }
 
       if (indexToChangeWith !== -1) {
-        console.log(`Change index ${index} with ${indexToChangeWith}`);
         grid[index] = grid[indexToChangeWith];
         grid[indexToChangeWith] = value;
         values = values.filter((val) => val! + value);
         break;
       } else {
-        console.log("Couldn't find an index to change values with!");
+        return false;
       }
     }
   }
+
+  return true;
 }
 
 function fillInSquare(square: number, grid: number[]) {
-  console.log();
-  console.log();
-  console.log('Handle Square: ' + square);
-
   const indices = indicesForSquare(square);
   let indicesToBeFilled = [...indices];
   let valuesToFillIn = [...NUMBERS];
   let problematicValues = [];
+
   while (valuesToFillIn.length > 0) {
     const indicesToValues = getIndicesToValues(indicesToBeFilled, grid);
-    const sortedIndices = orderByValues(valuesToFillIn, indicesToValues);
-    // console.log(indicesToValues);
-    // console.log(sortedIndices);
-    const value = sortedIndices[0];
-    const index = rand(indicesToValues[value]);
-    // console.log(`Insert ${value} into ${index}`);
-    if (index) {
+    const sortedValues = orderByValues(valuesToFillIn, indicesToValues);
+    const valuesPerIndex = getValuesPerIndex(indicesToBeFilled, grid);
+    const value = sortedValues[0];
+    const index = getIndexWithFewestAvailableValues(
+      indicesToValues[value],
+      valuesPerIndex
+    );
+
+    if (index !== undefined) {
       grid[index] = value;
     } else {
       problematicValues.push(value);
@@ -131,30 +160,35 @@ function fillInSquare(square: number, grid: number[]) {
     indicesToBeFilled = indicesToBeFilled.filter((ind) => ind !== index);
   }
 
-  if (problematicValues.length > 0) {
-    solveCollisions(problematicValues, square, grid);
-  }
-}
-
-function fillInSquareRandomly(square: number, grid: number[]) {
-  const indices = indicesForSquare(square);
-  const values = shuffle(NUMBERS);
-  for (let i = 0; i < indices.length; i++) {
-    const value = values[i];
-    const index = indices[i];
-    grid[index] = value;
-  }
+  return problematicValues;
 }
 
 export default function create() {
-  const grid = new Array(81).fill(0);
+  let grid;
 
-  for (let index = 0; index < SQUARE_ORDER.length; index++) {
-    const square = SQUARE_ORDER[index];
-    // if (index < SQUARE_LENGTH) fillInSquareRandomly(square, grid);
-    // else
-    fillInSquare(square, grid);
+  while (true) {
+    grid = new Array(81).fill(0);
+
+    let valid = true;
+    for (let index = 0; index < SQUARE_ORDER.length; index++) {
+      const square = SQUARE_ORDER[index];
+      const problematicValues = fillInSquare(square, grid);
+
+      if (problematicValues.length > 0) {
+        const collisionSolved = solveCollisions(
+          problematicValues,
+          square,
+          grid
+        );
+        if (!collisionSolved) {
+          valid = false;
+          break;
+        }
+      }
+    }
+
+    if (valid) break;
   }
 
-  printGrid(grid);
+  return grid;
 }

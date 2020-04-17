@@ -38,10 +38,22 @@ function getNextNotIn(array1, array2) {
     const notIn = array1.filter((el) => !array2.includes(el));
     return notIn[0];
 }
+function getIndexWithFewestAvailableValues(indices, indicesWithValues) {
+    if (!indices || indices.length === 0) {
+        return undefined;
+    }
+    const minAvailableNumbers = indices.reduce((value, index) => {
+        const numValuesForIndex = indicesWithValues[index].length;
+        return value < numValuesForIndex ? value : numValuesForIndex;
+    }, 100000);
+    const indicesToChoseFrom = indices.filter((index) => indicesWithValues[index].length === minAvailableNumbers);
+    return rand(indicesToChoseFrom);
+}
 exports.default = {
     shuffle: shuffle,
     rand: rand,
     printGrid: printGrid,
     orderByValues: orderByValues,
     getNextNotIn: getNextNotIn,
+    getIndexWithFewestAvailableValues: getIndexWithFewestAvailableValues,
 };

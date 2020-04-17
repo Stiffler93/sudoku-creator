@@ -44,10 +44,31 @@ function getNextNotIn(array1: number[], array2: number[]): number | undefined {
   return notIn[0];
 }
 
+function getIndexWithFewestAvailableValues(
+  indices: number[],
+  indicesWithValues: number[][]
+): number | undefined {
+  if (!indices || indices.length === 0) {
+    return undefined;
+  }
+
+  const minAvailableNumbers = indices.reduce((value, index) => {
+    const numValuesForIndex = indicesWithValues[index].length;
+    return value < numValuesForIndex ? value : numValuesForIndex;
+  }, 100000);
+
+  const indicesToChoseFrom = indices.filter(
+    (index) => indicesWithValues[index].length === minAvailableNumbers
+  );
+
+  return rand(indicesToChoseFrom);
+}
+
 export default {
   shuffle: shuffle,
   rand: rand,
   printGrid: printGrid,
   orderByValues: orderByValues,
   getNextNotIn: getNextNotIn,
+  getIndexWithFewestAvailableValues: getIndexWithFewestAvailableValues,
 };

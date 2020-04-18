@@ -4,5 +4,26 @@
   "SQUARE_LENGTH": 3,
   "GRID_LENGTH": 9,
   "SQUARE_ORDER": [0, 1, 3, 4, 6, 7, 2, 5, 8],
-  "T": [0, 1, 3, 4, 6, 7, 2, 5, 8]
+  "CREATION_SETTINGS": {
+    "Beginner": {
+      "upperLimit": 65,
+      "lowerLimit": 52,
+      "numCreations": 250
+    },
+    "Advanced": {
+      "upperLimit": 51,
+      "lowerLimit": 38,
+      "numCreations": 250
+    },
+    "Profi": {
+      "upperLimit": 37,
+      "lowerLimit": 25,
+      "numCreations": 250
+    },
+    "Maniac": {
+      "upperLimit": 24,
+      "lowerLimit": 17,
+      "numCreations": 250
+    }
+  }
 }

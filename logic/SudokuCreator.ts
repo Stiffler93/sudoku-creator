@@ -163,7 +163,7 @@ function fillInSquare(square: number, grid: number[]) {
   return problematicValues;
 }
 
-export default function create() {
+export default function create(): number[] {
   let grid;
 
   while (true) {

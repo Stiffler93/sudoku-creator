@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "typeRoots": ["json.d.ts"],
+    "typeRoots": [
+      "json.d.ts",
+      "node_modules/@types",
+      "node_modules/@types/node"
+    ],
     "module": "CommonJS",
     "target": "es6",
     "lib": ["es2020", "dom"],

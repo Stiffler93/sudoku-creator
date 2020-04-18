@@ -18,5 +18,10 @@
   "bugs": {
     "url": "https://github.com/Stiffler93/sudoku-creator/issues"
   },
-  "homepage": "https://github.com/Stiffler93/sudoku-creator#readme"
+  "homepage": "https://github.com/Stiffler93/sudoku-creator#readme",
+  "dependencies": {
+    "@types/node": "^13.13.0",
+    "@types/uuid": "^7.0.2",
+    "uuid": "^7.0.3"
+  }
 }
